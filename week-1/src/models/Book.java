@@ -7,8 +7,9 @@ import java.io.Serializable;
  */
 public class Book implements Serializable {
 
-    public Book(String name, String isbn, String author, String year, int copies) {
+    public Book(String name, String category, String isbn, String author, String year, int copies) {
         this.name = name;
+        this.category = category;
         this.isbn = isbn;
         this.author = author;
         this.year = year;
@@ -16,6 +17,7 @@ public class Book implements Serializable {
     }
 
     public String name;
+    public String category;
     public String isbn;
     public String author;
     public String year;
@@ -23,8 +25,9 @@ public class Book implements Serializable {
 
     @Override
     public String toString() {
-        return "models.Book{" +
+        return "Book{" +
                 "name='" + name + '\'' +
+                ", category='" + category + '\'' +
                 ", isbn='" + isbn + '\'' +
                 ", author='" + author + '\'' +
                 ", year='" + year + '\'' +

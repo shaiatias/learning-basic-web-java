@@ -15,8 +15,8 @@ public class CrudRepository<T> {
     private final String filename;
     private File file;
 
-    protected CrudRepository(String filename) {
-        this.filename = filename;
+    protected CrudRepository(String entityName) {
+        this.filename = entityName + ".dat";
         file = new File(filename);
         verifyFile();
     }
@@ -55,14 +55,13 @@ public class CrudRepository<T> {
             } catch (IOException ex) {
                 throw ex;
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
             } finally {
                 ois.close();
             }
         }
 
         catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
 
@@ -70,6 +69,14 @@ public class CrudRepository<T> {
     }
 
     protected void save(T entity) {
+
+        List<T> singleItemList = new ArrayList<>();
+        singleItemList.add(entity);
+
+        save(singleItemList);
+    }
+
+    public void save(List<T> entities) {
 
         verifyFile();
 
@@ -81,7 +88,7 @@ public class CrudRepository<T> {
             all = new ArrayList<>();
         }
 
-        all.add(entity);
+        all.addAll(entities);
 
         try {
 
@@ -89,7 +96,7 @@ public class CrudRepository<T> {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 
             try {
-                oos.writeObject(all);
+                oos.writeObject(entities);
             } finally {
                 oos.close();
             }

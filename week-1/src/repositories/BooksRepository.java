@@ -3,6 +3,7 @@ package repositories;
 import models.Book;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -25,22 +26,59 @@ public class BooksRepository extends CrudRepository<Book> {
     }
 
     private BooksRepository() {
-        super("books.dat");
+        super("books");
     }
 
     public List<Book> findBookByName(String name) {
+
         return getAll()
                 .stream()
                 .filter(book -> book.name.toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
-    public void addBook(String name, String isbn, String author, String year, int copies) {
-        Book book = new Book(name, isbn, author, year, copies);
+    public Optional<Book> findBookByIsbn(String isbn) {
+
+        return getAll()
+                .stream()
+                .filter(book -> book.isbn.equalsIgnoreCase(isbn))
+                .findFirst();
+    }
+
+    public void addBook(String name, String category, String isbn, String author, String year) {
+
+        Optional<Integer> previousAmount =
+                getOne(book -> book.isbn.equalsIgnoreCase(isbn))
+                .map(book -> book.copies);
+
+        int amount = 1 + previousAmount.orElse(0);
+
+        Book book = new Book(name, category, isbn, author, year, amount);
+        save(book);
+    }
+
+    public void addBook(String name, String category, String isbn, String author, String year, int copies) {
+        Book book = new Book(name, category, isbn, author, year, copies);
         save(book);
     }
 
     public void removeByIsbn(String isbn) {
         delete(book -> book.isbn.equalsIgnoreCase(isbn));
+    }
+
+    public List<String> getAllCategories() {
+        return getAll().stream().map(book -> book.category).collect(Collectors.toList());
+    }
+
+    public Optional<Book> findBookByCategory(String category) {
+        return findBooksByCategory(category).stream().findFirst();
+    }
+
+    public List<Book> findBooksByCategory(String category) {
+
+        return getAll()
+                .stream()
+                .filter(book -> book.category.equalsIgnoreCase(category))
+                .collect(Collectors.toList());
     }
 }

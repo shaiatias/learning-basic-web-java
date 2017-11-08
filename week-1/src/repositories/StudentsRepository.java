@@ -22,7 +22,7 @@ public class StudentsRepository extends CrudRepository<Student> {
     }
 
     private StudentsRepository() {
-        super("students.dat");
+        super("students");
     }
 
     public void addStudent(String firstname, String lastname, String id, String email) {
