@@ -5,7 +5,7 @@ import models.Student;
 /**
  * Created by shai on 11/7/2017.
  */
-public class StudentsRepository extends CrudRepository<Student> {
+public class StudentsRepository extends FileRepository<Student, String> {
 
     private static StudentsRepository instance = null;
 

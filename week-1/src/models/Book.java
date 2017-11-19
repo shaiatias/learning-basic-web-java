@@ -1,11 +1,23 @@
 package models;
 
-import java.io.Serializable;
+import repositories.Entity;
 
 /**
  * Created by shai on 11/7/2017.
  */
-public class Book implements Serializable {
+public class Book implements Entity<String> {
+
+    public String name;
+    public String category;
+    public String isbn;
+    public String author;
+    public String year;
+    public int copies;
+
+    @Override
+    public String id() {
+        return this.isbn;
+    }
 
     public Book(String name, String category, String isbn, String author, String year, int copies) {
         this.name = name;
@@ -15,13 +27,6 @@ public class Book implements Serializable {
         this.year = year;
         this.copies = copies;
     }
-
-    public String name;
-    public String category;
-    public String isbn;
-    public String author;
-    public String year;
-    public int copies;
 
     @Override
     public String toString() {

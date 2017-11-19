@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 /**
  * Created by shai on 11/7/2017.
  */
-public class BooksRepository extends CrudRepository<Book> {
+public class BooksRepository extends FileRepository<Book, String> {
 
     private static BooksRepository instance = null;
 
@@ -31,10 +31,12 @@ public class BooksRepository extends CrudRepository<Book> {
 
     public List<Book> findBookByName(String name) {
 
-        return getAll()
-                .stream()
-                .filter(book -> book.name.toLowerCase().contains(name.toLowerCase()))
-                .collect(Collectors.toList());
+        return name.equals("*") ?
+                getAll() :
+                getAll()
+                    .stream()
+                    .filter(book -> book.name.toLowerCase().contains(name.toLowerCase()))
+                    .collect(Collectors.toList());
     }
 
     public Optional<Book> findBookByIsbn(String isbn) {
@@ -64,10 +66,6 @@ public class BooksRepository extends CrudRepository<Book> {
 
     public void removeByIsbn(String isbn) {
         delete(book -> book.isbn.equalsIgnoreCase(isbn));
-    }
-
-    public List<String> getAllCategories() {
-        return getAll().stream().map(book -> book.category).collect(Collectors.toList());
     }
 
     public Optional<Book> findBookByCategory(String category) {

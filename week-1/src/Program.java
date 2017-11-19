@@ -1,8 +1,10 @@
 import com.sun.xml.internal.ws.util.UtilException;
 import models.Book;
 import models.BookReservation;
+import models.Category;
 import repositories.BookReservationsRepository;
 import repositories.BooksRepository;
+import repositories.CategoriesRepository;
 import repositories.StudentsRepository;
 
 import java.util.List;
@@ -73,11 +75,11 @@ public class Program {
         List<Book> searchResults = BooksRepository.getInstance().findBookByName(search);
 
         System.out.println("");
-        System.out.println("##\t\tNAME\t\tISBN\t\tINVENTORY");
+        System.out.println("##\t\t\tNAME\t\t\tISBN\t\t\tINVENTORY");
 
         for (int i = 0; i < searchResults.size(); i++) {
             Book book = searchResults.get(i);
-            System.out.println(i + "\t\t" + book.name + "\t\t" + book.isbn + "\t\t" + book.copies);
+            System.out.println(i + "\t\t\t" + book.name + "\t\t\t" + book.isbn + "\t\t\t" + book.copies);
         }
 
         System.out.println("");
@@ -89,15 +91,13 @@ public class Program {
 
             boolean bookIsAvailable = BookReservationsRepository
                     .getInstance()
-                    .isBookAvailable(bookReservation -> bookReservation.bookIsbn.equalsIgnoreCase(selectedBook.isbn));
+                    .isBookAvailable(selectedBook.copies, bookReservation -> bookReservation.bookIsbn.equalsIgnoreCase(selectedBook.isbn));
 
             if (bookIsAvailable) {
                 String studentId = Utils.getUserInput("Enter student id: ");
                 BookReservationsRepository.getInstance().reserveBook(studentId, selectedBook.isbn);
                 System.out.println("Book " + selectedBook.name + " is reserved successfully for student " + studentId);
-            }
-
-            else {
+            } else {
                 System.out.println("Book is not available");
             }
         }
@@ -106,7 +106,7 @@ public class Program {
     private static void handleReturnBook() {
 
         String isbn = Utils.getUserInput("Enter isbn: ");
-        String studentId = Utils.getUserInput("Enter author: ");
+        String studentId = Utils.getUserInput("Enter student id: ");
 
         System.out.println("");
 
@@ -114,7 +114,7 @@ public class Program {
 
         reservation.ifPresent(bookReservation -> {
 
-            if (bookReservation.from + (1000 * 60 * 60 * 24 * 2) > System.currentTimeMillis()) {
+            if (bookReservation.from + (1000 * 60 * 60 * 24 * 2) < System.currentTimeMillis()) {
                 System.out.println("user needs to be punished");
             }
         });
@@ -122,12 +122,12 @@ public class Program {
 
     private static void handleBorrowBook() {
 
-        List<String> categories = BooksRepository.getInstance().getAllCategories();
-        String category = printBooksCategoriesMenu(categories);
+        List<Category> categories = CategoriesRepository.getInstance().getAll();
+        Category category = printBooksCategoriesMenu(categories);
 
-        List<Book> books = BooksRepository.getInstance().findBooksByCategory(category)
+        List<Book> books = BooksRepository.getInstance().findBooksByCategory(category.name)
                 .stream()
-                .filter(book -> BookReservationsRepository.getInstance().isBookAvailable(bookReservation -> bookReservation.bookIsbn.equals(book.isbn)))
+                .filter(book -> BookReservationsRepository.getInstance().isBookAvailable(book.copies, bookReservation -> bookReservation.bookIsbn.equals(book.isbn)))
                 .collect(Collectors.toList());
 
         if (books.size() == 0) {
@@ -137,16 +137,16 @@ public class Program {
 
 
         System.out.println("");
-        System.out.println("##\t\tNAME\t\tISBN\t\tINVENTORY");
+        System.out.println("##\t\t\tNAME\t\t\tISBN\t\t\tINVENTORY");
 
         for (int i = 0; i < books.size(); i++) {
             Book book = books.get(i);
-            System.out.println(i + "\t\t" + book.name + "\t\t" + book.isbn + "\t\t" + book.copies);
+            System.out.println(i + "\t\t\t" + book.name + "\t\t\t" + book.isbn + "\t\t\t" + book.copies);
         }
 
         System.out.println("");
 
-        int bookIndexSelection = Utils.getUserInputInt("Enter book ## to reserve it: ", Optional.of(1), Optional.of(books.size()), Optional.of(0));
+        int bookIndexSelection = Utils.getUserInputInt("Enter book ## to reserve it: ", Optional.of(-1), Optional.of(books.size()), Optional.of(-1));
         Book selectedBook = books.get(bookIndexSelection);
 
         String studentId = Utils.getUserInput("Enter student id: ");
@@ -154,12 +154,12 @@ public class Program {
         System.out.println("Book " + selectedBook.name + " is reserved successfully for student " + studentId);
     }
 
-    private static String printBooksCategoriesMenu(List<String> categories) {
+    private static Category printBooksCategoriesMenu(List<Category> categories) {
 
         System.out.println("Select category from the following options:");
 
         for (int i = 0; i < categories.size(); i++) {
-            System.out.println(i + categories.get(i));
+            System.out.println(i + "\t" + categories.get(i).name);
         }
 
         int selection = Utils.getUserInputInt("enter category id", Optional.of(0), Optional.of(categories.size()), Optional.empty());
@@ -182,7 +182,7 @@ public class Program {
 
         boolean bookAvailable = BookReservationsRepository
                 .getInstance()
-                .isBookAvailable(bookReservation -> bookReservation.bookIsbn.equalsIgnoreCase(foundBook.isbn));
+                .isBookAvailable(foundBook.copies, bookReservation -> bookReservation.bookIsbn.equalsIgnoreCase(foundBook.isbn));
 
         if (!bookAvailable) {
             BooksRepository.getInstance().removeByIsbn(foundBook.isbn);
@@ -272,9 +272,11 @@ public class Program {
             } catch (Exception ignored) {
             }
 
-            while ( response < min.orElse(Integer.MIN_VALUE) ||
-                    response > max.orElse(Integer.MAX_VALUE) ||
-                    response != exitCode.orElse(Integer.MIN_VALUE)) {
+            while (true) {
+
+                if ((response > min.orElse(Integer.MIN_VALUE) && response < max.orElse(Integer.MAX_VALUE)) ||
+                    response == exitCode.orElse(Integer.MIN_VALUE))
+                    break;
 
                 if (response < min.orElse(Integer.MIN_VALUE)) {
                     System.out.print("Value is too low, try again: ");
