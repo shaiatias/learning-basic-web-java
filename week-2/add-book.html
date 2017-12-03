@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Add New Book</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="add-book-page.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <link href="nav.css" rel="stylesheet">
+    <nav>
+        <a href="/index.html">Home</a>
+        <a href="/search-book.html">Search</a>
+        <a href="/return-book.html">Return a book</a>
+        <a href="/register-student.html">Register new student</a>
+        <a href="/add-book.html" class="active">Add new book</a>
+    </nav>
+
+    <form>
+
+        <h1>Add New Book</h1>
+
+        <label for="bookName">Book Name: </label>
+        <input type="text" id="bookName" placeholder="book name">
+
+        <label for="category">Select category:</label>
+        <select name="category" id="category">
+            <option value="cs">Computer Science</option>
+            <option value="drama">Drama</option>
+            <option value="law">Law</option>
+        </select>
+
+        <label for="author">Author: </label>
+        <input type="text" id="author" placeholder="author">
+
+        <label for="isbn">ISBN: </label>
+        <input type="text" id="isbn" placeholder="book's isbn">
+
+        <label for="publication">Year of publication: </label>
+        <input type="number" min="1900" max="2018" id="publication" placeholder="publication">
+
+        <label for="copies">Copies: </label>
+        <input type="number" min="0" max="100" id="copies" placeholder="number of copies">
+
+        <input type="button" value="Submit">
+
+    </form>
+
+</body>
+
+</html>
