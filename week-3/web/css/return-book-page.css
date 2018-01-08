@@ -1,0 +1,28 @@
+
+form {
+    max-width: 300px;
+    margin: auto;
+}
+
+form > * {
+    width: 100%;
+    display: block;
+}
+
+form label {
+    margin: 0px 0;
+    padding-left: 10px;
+}
+
+form input:not([type='button']) {
+    padding: 10px 5px;
+    margin: 10px 0 20px;
+}
+
+form input[type='button'] {
+    margin: auto;
+    width: 100px;
+    padding: 10px 5px;
+    border-radius: 20px;
+    border: 1px solid black; 
+}
