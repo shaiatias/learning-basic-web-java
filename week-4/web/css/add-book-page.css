@@ -14,12 +14,13 @@ form label {
     padding-left: 10px;
 }
 
-form input:not([type='submit']) {
+form input:not([type='button']),
+form select {
     padding: 10px 5px;
     margin: 10px 0 20px;
 }
 
-form input[type='submit'] {
+form input[type='button'] {
     margin: auto;
     width: 100px;
     padding: 10px 5px;
@@ -32,4 +33,3 @@ form input[type='submit'] {
     font-size: smaller;
     font-weight: bold;
 }
-

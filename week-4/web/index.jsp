@@ -1,5 +1,3 @@
-<%@ page import="services.UsersService" %>
-
 <%--
   Created by IntelliJ IDEA.
   User: Benjamin

@@ -1,0 +1,19 @@
+
+nav {
+    margin: 25px;
+}
+
+nav a {
+    margin: 5px;
+    padding: 10px;
+    cursor: pointer;
+    text-transform: capitalize;
+    text-decoration: none;
+    color: blueviolet;
+    font-size: 18px;
+}
+
+nav a.active {
+    pointer-events: none;
+    color: black;
+}
